@@ -8,13 +8,13 @@ import {
 
 // FIREBASE CONFIGURATION
 const firebaseConfig = {
-    apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
-    authDomain: "saturdaychurchschool.firebaseapp.com",
-    projectId: "saturdaychurchschool",
-    storageBucket: "saturdaychurchschool.firebasestorage.app",
-    messagingSenderId: "1098070001648",
-    appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
-    measurementId: "G-QGES69P8QR"
+  apiKey: "AIzaSyB3E6n_VRbeW0MfEvksjvLFTwvDmx0Jk9I",
+  authDomain: "nrdstut.firebaseapp.com",
+  projectId: "nrdstut",
+  storageBucket: "nrdstut.firebasestorage.app",
+  messagingSenderId: "4814258678",
+  appId: "1:4814258678:web:5f8ea96c5c930eb1c847d7",
+  measurementId: "G-NWWNY3VHP6"
 };
 
 // INITIALIZE FIREBASE
