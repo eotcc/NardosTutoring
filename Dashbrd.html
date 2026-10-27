@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nardos Tutoring - Admin Dashboard</title>
+    <link rel="stylesheet" href="Admin.css">
+</head>
+<body>
+
+    <!-- ADMIN DASHBOARD CONTAINER -->
+    <div id="adminDashboard" class="container">
+        <header class="dashboard-header">
+            <h1>Nardos Tutoring</h1>
+            <h2>Admin Dashboard</h2>
+        </header>
+
+        <nav class="button-container">
+            <button type="button" onclick="location.href='regstr.html'">
+                Register Students
+            </button>
+            <button type="button" onclick="location.href='students.html'">
+                View Students
+            </button>
+            <button type="button" onclick="location.href='roster.html'">
+                Roster
+            </button>
+            <button type="button" onclick="location.href='homework.html'">
+                Homework
+            </button>
+        </nav>
+
+        <button type="button" id="signOutButton" class="sign-out-button">
+            Sign Out
+        </button>
+
+        <p id="dashboardMessage" class="message" role="status"></p>
+    </div>
+
+    <!-- DASHBOARD JS SCRIPT FOR AUTH PROTECTION & SIGN OUT -->
+    <script type="module" src="dashboard.js"></script>
+
+</body>
+</html>
