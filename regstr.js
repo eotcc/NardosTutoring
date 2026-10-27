@@ -80,11 +80,9 @@ function renderDayCheckboxes() {
     if (!container) return;
 
     container.innerHTML = DAYS.map(day => `
-        <label class="cursor-pointer select-none">
-            <input type="checkbox" id="check-${day.id}" class="sr-only peer" onchange="toggleDay('${day.id}', '${day.name}')">
-            <div class="px-3 py-2.5 text-center text-xs font-medium rounded-xl border border-slate-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-slate-50 transition-all shadow-sm">
-                ${day.name.slice(0, 3)}
-            </div>
+        <label for="check-${day.id}" class="cursor-pointer flex flex-col items-center justify-center p-3 text-center text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 transition-all shadow-sm select-none">
+            <input type="checkbox" id="check-${day.id}" class="hidden peer" onchange="toggleDay('${day.id}', '${day.name}')">
+            <span class="text-slate-700 peer-checked:text-indigo-700">${day.name.slice(0, 3)}</span>
         </label>
     `).join('');
 }
