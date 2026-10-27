@@ -3,8 +3,7 @@ import {
     getAuth,
     setPersistence,
     browserSessionPersistence,
-    signInWithEmailAndPassword,
-    onAuthStateChanged
+    signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 // FIREBASE CONFIGURATION
@@ -29,7 +28,7 @@ try {
     console.error("Firebase persistence error:", error);
 }
 
-// DOM ELEMENTS (Login Page Only)
+// DOM ELEMENTS
 const loginForm = document.getElementById("adminLoginForm");
 const loginMessage = document.getElementById("loginMessage");
 const loginButton = document.getElementById("loginButton");
@@ -50,7 +49,7 @@ if (loginForm) {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "";
-            // Redirect straight to dashboard upon successful login
+            // Redirect straight to dashboard on successful authentication
             window.location.href = "dashboard.html";
         } catch (error) {
             console.error("Firebase sign-in error:", error);
