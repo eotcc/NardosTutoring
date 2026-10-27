@@ -41,8 +41,8 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// UNIFIED LOGOUT & BACK NAVIGATION CLEANUP
-const handleLogoutOrBack = async () => {
+// UNIFIED LOGOUT CLEANUP
+const handleLogout = async () => {
     try {
         await signOut(auth);
     } catch (error) {
@@ -54,23 +54,34 @@ const handleLogoutOrBack = async () => {
     if (loginForm) loginForm.reset();
     if (loginMessage) loginMessage.textContent = "";
     if (dashboardMessage) dashboardMessage.textContent = "";
+    
+    if (loginContainer) loginContainer.style.display = "block";
+    if (dashboard) dashboard.style.display = "none";
 };
 
-// MAKE BACK NAVIGATION DO THE EXACT SAME THING AS LOGOUT
+// HANDLE BACK NAVIGATION: LET FIREBASE RE-VERIFY SESSION OR RESTORE DASHBOARD
 window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
-        await handleLogoutOrBack();
+        // If cached, let auth state or a quick refresh handle it, 
+        // but if a user is active, keep them on the dashboard.
+        if (auth.currentUser) {
+            if (loginContainer) loginContainer.style.display = "none";
+            if (dashboard) dashboard.style.display = "block";
+        } else {
+            if (loginContainer) loginContainer.style.display = "block";
+            if (dashboard) dashboard.style.display = "none";
+        }
     }
 });
 
 // AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        loginContainer.style.display = "none";
-        dashboard.style.display = "block";
+        if (loginContainer) loginContainer.style.display = "none";
+        if (dashboard) dashboard.style.display = "block";
     } else {
-        loginContainer.style.display = "block";
-        dashboard.style.display = "none";
+        if (loginContainer) loginContainer.style.display = "block";
+        if (dashboard) dashboard.style.display = "none";
     }
 });
 
@@ -113,5 +124,5 @@ loginForm.addEventListener("submit", async (event) => {
 
 // SIGN OUT HANDLER
 signOutButton.addEventListener("click", async () => {
-    await handleLogoutOrBack();
+    await handleLogout();
 });
