@@ -110,7 +110,7 @@ async function fetchStudentMessages() {
     try {
         const q = query(
             collection(db, "student_communications"), 
-            where("studentId", "==", currentStudent.id)
+            where("id", "==", currentStudent.id)
         );
         const querySnapshot = await getDocs(q);
         
