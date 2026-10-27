@@ -27,7 +27,7 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 // PROTECT ROUTE: Redirect to sign-in if user is not authenticated
 onAuthStateChanged(auth, (user) => {
     if (!user) {
-        window.location.href = "admin.html";
+        window.location.href = "index.html";
     }
 });
 
@@ -36,7 +36,7 @@ if (signOutButton) {
     signOutButton.addEventListener("click", async () => {
         try {
             await signOut(auth);
-            window.location.href = "admin.html";
+            window.location.href = "index.html";
         } catch (error) {
             console.error("Sign-out error:", error);
             if (dashboardMessage) {
@@ -49,6 +49,6 @@ if (signOutButton) {
 // BROWSER CACHE / BACK BUTTON SAFETY
 window.addEventListener("pageshow", (event) => {
     if (event.persisted && !auth.currentUser) {
-        window.location.href = "admin.html";
+        window.location.href = "index.html";
     }
 });
