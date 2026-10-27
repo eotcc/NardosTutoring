@@ -4,8 +4,7 @@ import {
     setPersistence,
     browserSessionPersistence,
     signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 // FIREBASE CONFIGURATION
@@ -30,98 +29,50 @@ try {
     console.error("Firebase persistence error:", error);
 }
 
-// DOM ELEMENTS
+// DOM ELEMENTS (Login Page Only)
 const loginForm = document.getElementById("adminLoginForm");
 const loginMessage = document.getElementById("loginMessage");
-const loginContainer = document.getElementById("adminLogin");
-const dashboard = document.getElementById("adminDashboard");
 const loginButton = document.getElementById("loginButton");
-const signOutButton = document.getElementById("signOutButton");
-const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// UNIFIED LOGOUT CLEANUP
-const handleLogout = async () => {
-    try {
-        await signOut(auth);
-    } catch (error) {
-        // Ignore if already signed out
-    }
-    
-    if (emailInput) emailInput.value = "";
-    if (passwordInput) passwordInput.value = "";
-    if (loginForm) loginForm.reset();
-    if (loginMessage) loginMessage.textContent = "";
-    if (dashboardMessage) dashboardMessage.textContent = "";
-    
-    if (loginContainer) loginContainer.style.display = "block";
-    if (dashboard) dashboard.style.display = "none";
-};
-
-// HANDLE BACK NAVIGATION: LET FIREBASE RE-VERIFY SESSION OR RESTORE DASHBOARD
-// HANDLE BACK NAVIGATION: RESTORE DASHBOARD IF LOGGED IN, ELSE SHOW LOGIN
-window.addEventListener("pageshow", async (event) => {
-    if (event.persisted) {
-        // Check if Firebase still remembers the logged-in session
-        if (auth.currentUser) {
-            if (loginContainer) loginContainer.style.display = "none";
-            if (dashboard) dashboard.style.display = "block";
-        } else {
-            await handleLogout();
-        }
-    }
-});
-
-// AUTHENTICATION STATE LISTENER
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        if (loginContainer) loginContainer.style.display = "none";
-        if (dashboard) dashboard.style.display = "block";
-    } else {
-        if (loginContainer) loginContainer.style.display = "block";
-        if (dashboard) dashboard.style.display = "none";
-    }
-});
-
 // SIGN IN HANDLER
-loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+if (loginForm) {
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-    loginMessage.textContent = "Signing in...";
-    loginButton.disabled = true;
+        loginMessage.textContent = "Signing in...";
+        loginButton.disabled = true;
 
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginMessage.textContent = "";
-    } catch (error) {
-        console.error("Firebase sign-in error:", error);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            loginMessage.textContent = "";
+            // Redirect straight to dashboard upon successful login
+            window.location.href = "dashboard.html";
+        } catch (error) {
+            console.error("Firebase sign-in error:", error);
 
-        switch (error.code) {
-            case "auth/invalid-credential":
-            case "auth/wrong-password":
-            case "auth/user-not-found":
-                loginMessage.textContent = "Incorrect email or password.";
-                break;
-            case "auth/invalid-email":
-                loginMessage.textContent = "Please enter a valid email address.";
-                break;
-            case "auth/too-many-requests":
-                loginMessage.textContent = "Too many attempts. Please try again later.";
-                break;
-            default:
-                loginMessage.textContent = "Sign-in failed. Please try again.";
-                break;
+            switch (error.code) {
+                case "auth/invalid-credential":
+                case "auth/wrong-password":
+                case "auth/user-not-found":
+                    loginMessage.textContent = "Incorrect email or password.";
+                    break;
+                case "auth/invalid-email":
+                    loginMessage.textContent = "Please enter a valid email address.";
+                    break;
+                case "auth/too-many-requests":
+                    loginMessage.textContent = "Too many attempts. Please try again later.";
+                    break;
+                default:
+                    loginMessage.textContent = "Sign-in failed. Please try again.";
+                    break;
+            }
+        } finally {
+            loginButton.disabled = false;
         }
-    } finally {
-        loginButton.disabled = false;
-    }
-});
-
-// SIGN OUT HANDLER
-signOutButton.addEventListener("click", async () => {
-    await handleLogout();
-});
+    });
+}
