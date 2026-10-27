@@ -1,118 +1,99 @@
-/* Reset & Base Styles */
+/* Base Reset & Styling for Admin Login */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 body {
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: #f1f5f9;
+    color: #1e293b;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
 }
 
-/* Container Cards */
-.login-container,
-.container {
+/* Login Card Container */
+.login-container {
     background: #ffffff;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
     width: 100%;
-    max-width: 450px;
+    max-width: 400px;
+    border: 1px solid #e2e8f0;
+}
+
+.login-container h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.5rem;
     text-align: center;
 }
 
-/* Headings */
-h1 {
-    font-size: 1.8rem;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-h2 {
-    font-size: 1.3rem;
-    color: #7f8c8d;
-    margin-bottom: 25px;
-    font-weight: 500;
-}
-
-/* Forms & Inputs */
+/* Form Fields */
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 1rem;
 }
 
-input {
+form input {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.2s ease;
-}
-
-input:focus {
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.55rem;
+    font-size: 0.95rem;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
     outline: none;
-    border-color: #3498db;
 }
 
-/* Buttons */
-button {
+form input:focus {
+    border-color: #6366f1;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Submit Button */
+form button {
     width: 100%;
-    padding: 12px;
-    background-color: #3498db;
-    color: #fff;
+    padding: 0.75rem;
+    background-color: #4f46e5;
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 0.55rem;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 0.5rem;
 }
 
-button:hover {
-    background-color: #2980b9;
+form button:hover {
+    background-color: #4338ca;
 }
 
-button:active {
-    transform: scale(0.99);
+form button:active {
+    transform: scale(0.98);
 }
 
-button:disabled {
-    background-color: #bdc3c7;
+form button:disabled {
+    background-color: #94a3b8;
     cursor: not-allowed;
 }
 
-/* Navigation & Dashboard Layout */
-.button-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.sign-out-button {
-    background-color: #e74c3c;
-}
-
-.sign-out-button:hover {
-    background-color: #c0392b;
-}
-
-/* Messages & Feedback */
+/* Error/Info Messages */
 .message {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    min-height: 20px;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    min-height: 1.2rem;
 }
 
 .message.error {
-    color: #e74c3c;
+    color: #e11d48;
 }
