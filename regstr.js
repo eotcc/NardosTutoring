@@ -1,5 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+import { 
+    getAuth, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 import {
     getFirestore,
     collection,
@@ -20,9 +24,10 @@ const firebaseConfig = {
     measurementId: "G-NWWNY3VHP6"
 };
 
-// INITIALIZE FIREBASE & FIRESTORE
+// INITIALIZE FIREBASE, AUTH & FIRESTORE
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 // DAYS CONFIGURATION
@@ -39,19 +44,28 @@ const DAYS = [
 let selectedDaysState = {};
 let records = [];
 
-// INITIALIZE APP ON DOM LOAD
-document.addEventListener('DOMContentLoaded', async () => {
+// INITIALIZE APP ON DOM LOAD WITH AUTH CHECK
+document.addEventListener('DOMContentLoaded', () => {
     renderDayCheckboxes();
-    await fetchRecordsFromFirebase();
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+
+    // Ensure user is authenticated before fetching data from Firestore
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            await fetchRecordsFromFirebase();
+        } else {
+            // If not logged in, redirect to admin sign-in page
+            window.location.href = 'index.html';
+        }
+    });
 });
 
 // REDIRECT TO DASHBOARD IF USER CLICKS BROWSER BACK BUTTON
 window.addEventListener("pageshow", (event) => {
     if (event.persisted) {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'Dashbrd.html';
     }
 });
 
