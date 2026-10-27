@@ -180,7 +180,7 @@ window.handleFormSubmit = async function(event) {
         showToast(`Registration Complete! Code: ${generatedCode}`, 'success');
         
         setTimeout(() => {
-            window.location.href = 'dashbrd.html';
+            window.location.href = 'Dashbrd.html';
         }, 1500);
     } catch (error) {
         console.error("Error saving record to Firebase:", error);
