@@ -11,19 +11,20 @@
     <div class="login-container">
         <h2>Admin Sign In</h2>
 
-        <form id="adminLoginForm">
+        <!-- REPLACE YOUR FORM WITH THESE LINES (around lines 11 to 33) -->
+        <form id="adminLoginForm" autocomplete="off">
             <input
                 type="email"
                 id="adminEmail"
                 placeholder="Enter admin email"
-                autocomplete="username"
+                autocomplete="off"
                 required
             >
             <input
                 type="password"
                 id="adminPassword"
                 placeholder="Enter password"
-                autocomplete="current-password"
+                autocomplete="new-password"
                 required
             >
 
@@ -33,6 +34,8 @@
 
             <p id="loginMessage" class="message error" role="alert"></p>
         </form>
+        <!-- END OF REPLACEMENT -->
+
     </div>
 
     <!-- Admin Sign-In Script -->
