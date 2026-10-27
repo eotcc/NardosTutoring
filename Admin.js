@@ -60,16 +60,15 @@ const handleLogout = async () => {
 };
 
 // HANDLE BACK NAVIGATION: LET FIREBASE RE-VERIFY SESSION OR RESTORE DASHBOARD
+// HANDLE BACK NAVIGATION: RESTORE DASHBOARD IF LOGGED IN, ELSE SHOW LOGIN
 window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
-        // If cached, let auth state or a quick refresh handle it, 
-        // but if a user is active, keep them on the dashboard.
+        // Check if Firebase still remembers the logged-in session
         if (auth.currentUser) {
             if (loginContainer) loginContainer.style.display = "none";
             if (dashboard) dashboard.style.display = "block";
         } else {
-            if (loginContainer) loginContainer.style.display = "block";
-            if (dashboard) dashboard.style.display = "none";
+            await handleLogout();
         }
     }
 });
