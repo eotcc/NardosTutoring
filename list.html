@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Schedules & Attendance - Nardos Tutoring</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom External CSS -->
+    <link rel="stylesheet" href="list.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans antialiased text-slate-800 pb-12">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm mb-6">
+        <div class="flex items-center space-x-3">
+            <a href="dashboard.html" class="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-xl transition-all" title="Back to Dashboard">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div>
+                <h1 class="font-bold text-slate-900 text-base">Student Schedules Directory</h1>
+                <p class="text-xs text-slate-500">Nardos Tutoring</p>
+            </div>
+        </div>
+        <div class="w-72">
+            <input type="text" id="search-input" oninput="filterAttendanceList()" placeholder="Search by name or ID code..." class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 space-y-6">
+        <div class="card-container bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">Registered Student Time Slots</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Reviewing active student codes, names, enrolled days, and hours.</p>
+            </div>
+            <span id="total-count" class="bg-indigo-50 text-indigo-700 font-semibold text-xs px-3 py-1.5 rounded-xl border border-indigo-100">
+                0 Students
+            </span>
+        </div>
+
+        <!-- Student List Container -->
+        <div id="attendance-list-container" class="space-y-4">
+            <!-- Populated dynamically via JS -->
+            <div class="text-center py-12 bg-white rounded-2xl border border-slate-200">
+                <p class="text-sm text-slate-400">Loading student records...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-x-full transition-transform duration-300 ease-out bg-white border border-slate-200 shadow-xl rounded-2xl p-4 flex items-center space-x-3 max-w-sm">
+        <i id="toast-icon" data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+        <p id="toast-message" class="text-xs font-medium text-slate-700">Notification message here</p>
+    </div>
+
+    <!-- Script Module -->
+    <script type="module" src="list.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
