@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// REDIRECT TO ADMIN DASHBOARD IF USER CLICKS BROWSER BACK BUTTON
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        window.location.href = 'admin.html';
+    }
+});
+
 // 1. Render Day Selector Checkboxes
 function renderDayCheckboxes() {
     const container = document.getElementById('day-buttons-container');
