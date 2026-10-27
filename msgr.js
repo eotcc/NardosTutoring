@@ -9,7 +9,6 @@ import {
     addDoc
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-// YOUR FIREBASE CONFIGURATION (`nrdstut`)
 const firebaseConfig = {
     apiKey: "AIzaSyB3E6n_VRbeW0MfEvksjvLFTwvDmx0Jk9I",
     authDomain: "nrdstut.firebaseapp.com",
@@ -26,34 +25,35 @@ const db = getFirestore(app);
 
 let currentStudent = null;
 
-// VERIFY STUDENT ID CODE
 window.verifyStudentCode = async function(event) {
     event.preventDefault();
     const codeInput = document.getElementById('studentCodeInput');
     const enteredId = codeInput.value.trim().toUpperCase();
 
-    if (!enteredId) return;
+    if (!enteredId) {
+        showToast("Please enter an ID code.", "error");
+        return;
+    }
 
     try {
-        // Query student_registrations collection where the 'id' field matches the entered code
+        // Query student_registrations matching the 'id' field
         const q = query(collection(db, "student_registrations"), where("id", "==", enteredId));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            // Fallback manual scan just in case of case differences
             const allDocs = await getDocs(collection(db, "student_registrations"));
             let found = false;
             
             allDocs.forEach((docSnap) => {
                 const data = docSnap.data();
-                if (data.id && data.id.toUpperCase() === enteredId) {
+                if (data.id && data.id.trim().toUpperCase() === enteredId) {
                     currentStudent = { firestoreId: docSnap.id, ...data };
                     found = true;
                 }
             });
 
             if (!found) {
-                showToast("Invalid Student ID Code. Please check and try again.", "error");
+                showToast("Invalid ID Code. Please check and try again.", "error");
                 return;
             }
         } else {
@@ -62,17 +62,40 @@ window.verifyStudentCode = async function(event) {
             });
         }
 
-        // Display student profile info in UI
-        document.getElementById('display-student-name').innerText = currentStudent.fullName || `${currentStudent.firstName} ${currentStudent.lastName}`; document.getElementById('display-student-grade').innerText = currentStudent.grade \vert{}\vert{} 'N/A'; document.getElementById('display-student-id').innerText = currentStudent.id;  const fName = currentStudent.firstName \vert{}\vert{} 'S'; const lName = currentStudent.lastName \vert{}\vert{} 'T'; document.getElementById('student-initials-badge').innerText = `${fName.charAt(0)}${lName.charAt(0)}`.toUpperCase();  document.getElementById('header-student-name').innerText = currentStudent.fullName \vert{}\vert{} `${currentStudent.firstName} ${currentStudent.lastName}`; document.getElementById('student-badge-header').classList.remove('hidden'); document.getElementById('student-badge-header').classList.add('flex');  // Switch to messaging interface document.getElementById('step-login-card').classList.add('hidden'); document.getElementById('step-messaging-card').classList.remove('hidden');  showToast(`Welcome, ${currentStudent.fullName || currentStudent.firstName}!`, 'success');
+        const studentName = currentStudent.fullName || `${currentStudent.firstName || ''} ${currentStudent.lastName || ''}`.trim() || 'Student';
+        const studentGrade = currentStudent.grade || 'N/A';
+        const studentIdCode = currentStudent.id || enteredId;
+
+        document.getElementById('display-student-name').innerText = studentName;
+        document.getElementById('display-student-grade').innerText = studentGrade;
+        document.getElementById('display-student-id').innerText = studentIdCode;
+        
+        const initials = studentName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'ST';
+        document.getElementById('student-initials-badge').innerText = initials;
+        document.getElementById('header-student-name').innerText = studentName;
+        
+        const badgeHeader = document.getElementById('student-badge-header');
+        badgeHeader.classList.remove('hidden');
+        badgeHeader.classList.add('flex');
+
+        const loginCard = document.getElementById('step-login-card');
+        const messagingCard = document.getElementById('step-messaging-card');
+
+        if (loginCard && messagingCard) {
+            loginCard.style.display = 'none';
+            messagingCard.classList.remove('hidden');
+            messagingCard.style.display = 'block';
+        }
+
+        showToast(`Welcome back, ${studentName}!`, 'success');
         await fetchStudentMessages();
 
     } catch (error) {
-        console.error("Error verifying ID code:", error);
-        showToast("Verification failed. Please try again.", "error");
+        console.error("Error during verification:", error);
+        showToast("Error connecting to database.", "error");
     }
 };
 
-// SEND MESSAGE TIED TO STUDENT ID
 window.sendStudentMessage = async function(event) {
     event.preventDefault();
     if (!currentStudent) return;
@@ -83,8 +106,8 @@ window.sendStudentMessage = async function(event) {
     if (!messageContent) return;
 
     const messagePayload = {
-        studentId: currentStudent.id, // Explicitly using the ID code
-        studentName: currentStudent.fullName || `${currentStudent.firstName}${currentStudent.lastName}`,
+        id: currentStudent.id, // Using 'id' instead of studentId
+        studentName: currentStudent.fullName || `${currentStudent.firstName || ''} ${currentStudent.lastName || ''}`.trim(),
         grade: currentStudent.grade || 'N/A',
         message: messageContent,
         createdAt: new Date().toISOString(),
@@ -102,12 +125,13 @@ window.sendStudentMessage = async function(event) {
     }
 };
 
-// FETCH MESSAGES FOR THIS ID
 async function fetchStudentMessages() {
     if (!currentStudent) return;
     const container = document.getElementById('student-messages-list');
+    if (!container) return;
 
     try {
+        // Query student_communications matching 'id'
         const q = query(
             collection(db, "student_communications"), 
             where("id", "==", currentStudent.id)
@@ -137,17 +161,26 @@ async function fetchStudentMessages() {
         `).join('');
 
     } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Error fetching past messages:", error);
     }
 }
 
 window.logoutStudent = function() {
     currentStudent = null;
     document.getElementById('studentCodeInput').value = '';
-    document.getElementById('step-messaging-card').classList.add('hidden');
-    document.getElementById('step-login-card').classList.remove('hidden');
-    document.getElementById('student-badge-header').classList.remove('flex');
-    document.getElementById('student-badge-header').classList.add('hidden');
+    
+    const loginCard = document.getElementById('step-login-card');
+    const messagingCard = document.getElementById('step-messaging-card');
+    if (loginCard) loginCard.style.display = 'block';
+    if (messagingCard) {
+        messagingCard.classList.add('hidden');
+        messagingCard.style.display = 'none';
+    }
+
+    const badgeHeader = document.getElementById('student-badge-header');
+    badgeHeader.classList.remove('flex');
+    badgeHeader.classList.add('hidden');
+    
     showToast("Logged out.", "info");
 };
 
