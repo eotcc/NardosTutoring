@@ -35,6 +35,16 @@ const loginButton = document.getElementById("loginButton");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
+// 🟢 ADD THIS HERE: Clears cached inputs and passwords when hitting back/cache reload
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        if (loginForm) loginForm.reset();
+        if (emailInput) emailInput.value = "";
+        if (passwordInput) passwordInput.value = "";
+        if (loginMessage) loginMessage.textContent = "";
+    }
+});
+
 // SIGN IN HANDLER
 if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
@@ -49,7 +59,8 @@ if (loginForm) {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "";
-            // Redirect straight to dashboard on successful authentication
+            // Clear inputs right before redirecting so they aren't stored in cache
+            loginForm.reset();
             window.location.href = "Dashbrd.html";
         } catch (error) {
             console.error("Firebase sign-in error:", error);
