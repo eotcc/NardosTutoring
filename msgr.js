@@ -26,36 +26,34 @@ const db = getFirestore(app);
 
 let currentStudent = null;
 
-// 1. VERIFY STUDENT CODE FROM REGISTRATION RECORDS
+// VERIFY STUDENT ID CODE
 window.verifyStudentCode = async function(event) {
     event.preventDefault();
     const codeInput = document.getElementById('studentCodeInput');
-    const enteredCode = codeInput.value.trim().toUpperCase();
+    const enteredId = codeInput.value.trim().toUpperCase();
 
-    if (!enteredCode) return;
+    if (!enteredId) return;
 
     try {
-        console.log("Searching for student code:", enteredCode);
-
-        // Query student_registrations collection for the unique ID code
-        const q = query(collection(db, "student_registrations"), where("id", "==", enteredCode));
+        // Query student_registrations collection where the 'id' field matches the entered code
+        const q = query(collection(db, "student_registrations"), where("id", "==", enteredId));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            // Fallback check: try fetching all records and matching manually (helpful if case sensitivity or indexing differs)
+            // Fallback manual scan just in case of case differences
             const allDocs = await getDocs(collection(db, "student_registrations"));
             let found = false;
             
             allDocs.forEach((docSnap) => {
                 const data = docSnap.data();
-                if (data.id && data.id.toUpperCase() === enteredCode) {
+                if (data.id && data.id.toUpperCase() === enteredId) {
                     currentStudent = { firestoreId: docSnap.id, ...data };
                     found = true;
                 }
             });
 
             if (!found) {
-                showToast("Invalid Student Code. Please check your registration code.", "error");
+                showToast("Invalid Student ID Code. Please check and try again.", "error");
                 return;
             }
         } else {
@@ -64,39 +62,17 @@ window.verifyStudentCode = async function(event) {
             });
         }
 
-        console.log("Student found:", currentStudent);
-
-        // Populate student profile info onto the UI
-        document.getElementById('display-student-name').innerText = currentStudent.fullName || `${currentStudent.firstName} ${currentStudent.lastName}`;
-        document.getElementById('display-student-grade').innerText = currentStudent.grade || 'N/A';
-        document.getElementById('display-student-id').innerText = currentStudent.id;
-        
-        const fName = currentStudent.firstName || 'S';
-        const lName = currentStudent.lastName || 'T';
-        const initials = `${fName.charAt(0)}${lName.charAt(0)}`.toUpperCase();
-        document.getElementById('student-initials-badge').innerText = initials;
-
-        // Show header badge
-        document.getElementById('header-student-name').innerText = currentStudent.fullName || `${currentStudent.firstName} ${currentStudent.lastName}`;
-        document.getElementById('student-badge-header').classList.remove('hidden');
-        document.getElementById('student-badge-header').classList.add('flex');
-
-        // Switch views from login card to messaging card
-        document.getElementById('step-login-card').classList.add('hidden');
-        document.getElementById('step-messaging-card').classList.remove('hidden');
-
-        showToast(`Welcome back, ${currentStudent.fullName || currentStudent.firstName}!`, 'success');
-        
-        // Fetch past messages for this student
+        // Display student profile info in UI
+        document.getElementById('display-student-name').innerText = currentStudent.fullName || `${currentStudent.firstName} ${currentStudent.lastName}`; document.getElementById('display-student-grade').innerText = currentStudent.grade \vert{}\vert{} 'N/A'; document.getElementById('display-student-id').innerText = currentStudent.id;  const fName = currentStudent.firstName \vert{}\vert{} 'S'; const lName = currentStudent.lastName \vert{}\vert{} 'T'; document.getElementById('student-initials-badge').innerText = `${fName.charAt(0)}${lName.charAt(0)}`.toUpperCase();  document.getElementById('header-student-name').innerText = currentStudent.fullName \vert{}\vert{} `${currentStudent.firstName} ${currentStudent.lastName}`; document.getElementById('student-badge-header').classList.remove('hidden'); document.getElementById('student-badge-header').classList.add('flex');  // Switch to messaging interface document.getElementById('step-login-card').classList.add('hidden'); document.getElementById('step-messaging-card').classList.remove('hidden');  showToast(`Welcome, ${currentStudent.fullName || currentStudent.firstName}!`, 'success');
         await fetchStudentMessages();
 
     } catch (error) {
-        console.error("Error verifying code:", error);
-        showToast("Verification failed. Check console for details.", "error");
+        console.error("Error verifying ID code:", error);
+        showToast("Verification failed. Please try again.", "error");
     }
 };
 
-// 2. SEND DIRECT MESSAGE LINKED TO STUDENT ID & NAME
+// SEND MESSAGE TIED TO STUDENT ID
 window.sendStudentMessage = async function(event) {
     event.preventDefault();
     if (!currentStudent) return;
@@ -107,8 +83,8 @@ window.sendStudentMessage = async function(event) {
     if (!messageContent) return;
 
     const messagePayload = {
-        studentId: currentStudent.id,
-        studentName: currentStudent.fullName || `${currentStudent.firstName} ${currentStudent.lastName}`,
+        studentId: currentStudent.id, // Explicitly using the ID code
+        studentName: currentStudent.fullName || `${currentStudent.firstName}${currentStudent.lastName}`,
         grade: currentStudent.grade || 'N/A',
         message: messageContent,
         createdAt: new Date().toISOString(),
@@ -117,10 +93,8 @@ window.sendStudentMessage = async function(event) {
 
     try {
         await addDoc(collection(db, "student_communications"), messagePayload);
-        
         messageInput.value = '';
         showToast("Message sent successfully!", "success");
-        
         await fetchStudentMessages();
     } catch (error) {
         console.error("Error sending message:", error);
@@ -128,7 +102,7 @@ window.sendStudentMessage = async function(event) {
     }
 };
 
-// 3. FETCH STUDENT'S PREVIOUS MESSAGES
+// FETCH MESSAGES FOR THIS ID
 async function fetchStudentMessages() {
     if (!currentStudent) return;
     const container = document.getElementById('student-messages-list');
@@ -145,7 +119,6 @@ async function fetchStudentMessages() {
             messages.push(docSnap.data());
         });
 
-        // Sort by date newest first
         messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         if (messages.length === 0) {
@@ -168,7 +141,6 @@ async function fetchStudentMessages() {
     }
 }
 
-// 4. LOGOUT / SWITCH STUDENT CODE
 window.logoutStudent = function() {
     currentStudent = null;
     document.getElementById('studentCodeInput').value = '';
@@ -176,16 +148,14 @@ window.logoutStudent = function() {
     document.getElementById('step-login-card').classList.remove('hidden');
     document.getElementById('student-badge-header').classList.remove('flex');
     document.getElementById('student-badge-header').classList.add('hidden');
-    showToast("Logged out of session.", "info");
+    showToast("Logged out.", "info");
 };
 
-// Helper: Escape HTML
 function escapeHtml(text) {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// Toast Feedback Notification
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toast-message');
@@ -193,17 +163,7 @@ function showToast(message, type = 'success') {
 
     if (!toast || !toastMsg || !toastIcon) return;
     toastMsg.innerText = message;
-    
-    if (type === 'error') {
-        toastIcon.setAttribute('data-lucide', 'alert-circle');
-        toastIcon.className = "w-5 h-5 text-rose-400";
-    } else if (type === 'info') {
-        toastIcon.setAttribute('data-lucide', 'info');
-        toastIcon.className = "w-5 h-5 text-sky-400";
-    } else {
-        toastIcon.setAttribute('data-lucide', 'check-circle-2');
-        toastIcon.className = "w-5 h-5 text-emerald-400";
-    }
+    toastIcon.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'check-circle-2');
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
     toast.classList.remove('translate-x-full');
