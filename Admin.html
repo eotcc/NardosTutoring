@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nardos Tutoring - Admin</title>
+    <link rel="stylesheet" href="Admin.css">
+</head>
+<body>
+
+    <!-- ADMIN LOGIN CONTAINER -->
+    <div id="adminLogin" class="login-container">
+        <h2>Admin Sign In</h2>
+
+        <form id="adminLoginForm">
+            <input
+                type="email"
+                id="adminEmail"
+                placeholder="Enter admin email"
+                autocomplete="username"
+                required
+            >
+            <input
+                type="password"
+                id="adminPassword"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" id="loginButton">
+                Sign In
+            </button>
+
+            <p id="loginMessage" class="message error" role="alert"></p>
+        </form>
+    </div>
+
+    <!-- ADMIN DASHBOARD CONTAINER -->
+    <div id="adminDashboard" class="container" style="display: none;">
+        <header class="dashboard-header">
+            <h1>Nardos Tutoring</h1>
+            <h2>Admin Dashboard</h2>
+        </header>
+
+        <nav class="button-container">
+            <button type="button" onclick="location.href='regstr.html'">
+                Register Students
+            </button>
+            <button type="button" onclick="location.href='students.html'">
+                View Students
+            </button>
+            <button type="button" onclick="location.href='roster.html'">
+                Roster
+            </button>
+            <button type="button" onclick="location.href='homework.html'">
+                Homework
+            </button>
+        </nav>
+
+        <button type="button" id="signOutButton" class="sign-out-button">
+            Sign Out
+        </button>
+
+        <p id="dashboardMessage" class="message" role="status"></p>
+    </div>
+
+    <!-- EXTERNAL JS SCRIPT (ES MODULE) -->
+    <script type="module" src="Admin.js"></script>
+
+</body>
+</html>
