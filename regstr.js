@@ -9,7 +9,7 @@ import {
     doc
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-// YOUR NEW FIREBASE CONFIGURATION
+// YOUR FIREBASE CONFIGURATION (`nrdstut`)
 const firebaseConfig = {
     apiKey: "AIzaSyB3E6n_VRbeW0MfEvksjvLFTwvDmx0Jk9I",
     authDomain: "nrdstut.firebaseapp.com",
@@ -48,6 +48,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// REDIRECT TO DASHBOARD IF USER CLICKS BROWSER BACK BUTTON
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        window.location.href = 'dashboard.html';
+    }
+});
+
 // FETCH RECORDS FROM FIRESTORE
 async function fetchRecordsFromFirebase() {
     try {
@@ -57,7 +64,8 @@ async function fetchRecordsFromFirebase() {
             records.push({ firestoreId: docSnap.id, ...docSnap.data() });
         });
         updateRecordsBadge();
-        if (document.getElementById('records-list-container')) {
+        const tabRecords = document.getElementById('tab-records');
+        if (document.getElementById('records-list-container') && tabRecords && !tabRecords.classList.contains('hidden')) {
             renderRecords();
         }
     } catch (error) {
@@ -101,10 +109,12 @@ function renderScheduleTimeInputs() {
     if (activeDays.length === 0) {
         container.innerHTML = `
             <div id="empty-days-placeholder" class="text-center py-8 px-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
+                <i data-lucide="calendar" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
                 <p class="text-sm text-slate-500 font-medium">No days selected yet.</p>
                 <p class="text-xs text-slate-400 mt-1">Select one or more days above to configure start and end times.</p>
             </div>
         `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
 
@@ -119,17 +129,19 @@ function renderScheduleTimeInputs() {
                 <div class="flex items-center space-x-3 text-xs">
                     <div class="flex items-center space-x-1.5">
                         <span class="text-slate-500 font-medium">Start:</span>
-                        <input type="time" value="${day.startTime}" onchange="updateDayTime('${dayId}', 'startTime', this.value)" required class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg">
+                        <input type="time" value="${day.startTime}" onchange="updateDayTime('${dayId}', 'startTime', this.value)" required class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
                     </div>
                     <span class="text-slate-400">-</span>
                     <div class="flex items-center space-x-1.5">
                         <span class="text-slate-500 font-medium">End:</span>
-                        <input type="time" value="${day.endTime}" onchange="updateDayTime('${dayId}', 'endTime', this.value)" required class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg">
+                        <input type="time" value="${day.endTime}" onchange="updateDayTime('${dayId}', 'endTime', this.value)" required class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
                     </div>
                 </div>
             </div>
         `;
     }).join('');
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 window.updateDayTime = function(dayId, field, value) {
@@ -177,11 +189,11 @@ window.handleFormSubmit = async function(event) {
         await addDoc(collection(db, "student_registrations"), registrationPayload);
         resetForm();
         await fetchRecordsFromFirebase();
-        showToast(`Registration Complete! Code: ${generatedCode}`, 'success');
+        showToast(`Registration Complete! Code generated: ${generatedCode}`, 'success');
         
         setTimeout(() => {
-            window.location.href = 'Dashbrd.html';
-        }, 1500);
+            switchTab('records');
+        }, 1200);
     } catch (error) {
         console.error("Error saving record to Firebase:", error);
         showToast("Failed to save registration.", "error");
@@ -200,7 +212,91 @@ function resetForm() {
     renderScheduleTimeInputs();
 }
 
-// DELETE RECORD FROM FIRESTORE
+// 5. RENDER RECORDED SUBMISSIONS
+window.renderRecords = function(dataToRender = records) {
+    const container = document.getElementById('records-list-container');
+    if (!container) return;
+    
+    if (dataToRender.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                <i data-lucide="folder-open" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
+                <h3 class="text-slate-600 font-semibold text-base">No Recorded Entries Found</h3>
+                <p class="text-slate-400 text-xs mt-1">Submit a registration form to view recorded student entries here.</p>
+            </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+    }
+
+    container.innerHTML = dataToRender.map(entry => `
+        <div class="border border-slate-200 rounded-2xl p-5 hover:border-indigo-300 transition-all bg-white shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-slate-100 gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-100 text-indigo-700 font-bold px-3 py-2 rounded-xl text-base tracking-wider font-mono">
+                        ${entry.id}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg leading-snug">${entry.fullName}</h3>
+                        <p class="text-xs text-slate-500 flex items-center gap-2">
+                            <span><i data-lucide="graduation-cap" class="inline w-3.5 h-3.5"></i> ${entry.grade}</span> • 
+                            <span><i data-lucide="phone" class="inline w-3.5 h-3.5"></i> ${entry.phone}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                        Added ${new Date(entry.createdAt).toLocaleDateString()}
+                    </span>
+                    <button onclick="deleteRecord('${entry.firestoreId}')" title="Delete record" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Daily Schedules -->
+            <div>
+                <h4 class="text-xs font-semibold uppercase text-slate-400 tracking-wider mb-2">Assigned Time Slots</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    ${Object.values(entry.schedules).map(s => `
+                        <div class="bg-slate-50 border border-slate-200/60 px-3 py-2 rounded-xl flex items-center justify-between text-xs">
+                            <span class="font-semibold text-indigo-900">${s.name}</span>
+                            <span class="font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">${formatTime(s.startTime)} - ${formatTime(s.endTime)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+
+// Helper: Format 24hr time to 12hr AM/PM
+function formatTime(timeStr) {
+    if (!timeStr) return '';
+    const [hours, minutes] = timeStr.split(':');
+    let h = parseInt(hours, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${minutes} ${ampm}`;
+}
+
+// Filter Records Search
+window.filterRecords = function() {
+    const searchInput = document.getElementById('search-input');
+    if (!searchInput) return;
+    const query = searchInput.value.toLowerCase();
+    const filtered = records.filter(r => 
+        r.fullName.toLowerCase().includes(query) || 
+        r.id.toLowerCase().includes(query) ||
+        r.grade.toLowerCase().includes(query) ||
+        r.phone.includes(query)
+    );
+    renderRecords(filtered);
+};
+
+// Delete Single Record from Firestore
 window.deleteRecord = async function(firestoreId) {
     try {
         await deleteDoc(doc(db, "student_registrations", firestoreId));
@@ -212,12 +308,38 @@ window.deleteRecord = async function(firestoreId) {
     }
 };
 
+// Switch Navigation Tabs
+window.switchTab = function(tabName) {
+    const registerTab = document.getElementById('tab-register');
+    const recordsTab = document.getElementById('tab-records');
+    const regBtn = document.getElementById('nav-register-btn');
+    const recBtn = document.getElementById('nav-records-btn');
+
+    if (!registerTab || !recordsTab) return;
+
+    if (tabName === 'register') {
+        registerTab.classList.remove('hidden');
+        recordsTab.classList.add('hidden');
+        
+        if (regBtn) regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
+        if (recBtn) recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
+    } else {
+        recordsTab.classList.remove('hidden');
+        registerTab.classList.add('hidden');
+        
+        if (recBtn) recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
+        if (regBtn) regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
+        
+        renderRecords();
+    }
+};
+
 function updateRecordsBadge() {
     const badge = document.getElementById('records-count-badge');
     if (badge) badge.innerText = records.length;
 }
 
-// TOAST NOTIFICATIONS
+// Toast Feedback Notification
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toast-message');
@@ -229,3 +351,18 @@ function showToast(message, type = 'success') {
     
     if (type === 'error') {
         toastIcon.setAttribute('data-lucide', 'alert-circle');
+        toastIcon.className = "w-5 h-5 text-rose-400";
+    } else if (type === 'info') {
+        toastIcon.setAttribute('data-lucide', 'info');
+        toastIcon.className = "w-5 h-5 text-sky-400";
+    } else {
+        toastIcon.setAttribute('data-lucide', 'check-circle-2');
+        toastIcon.className = "w-5 h-5 text-emerald-400";
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    toast.classList.remove('translate-x-full');
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+    }, 3500);
+}
