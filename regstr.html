@@ -6,6 +6,8 @@
     <title>Student Registration - Nardos Tutoring</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom External CSS -->
+    <link rel="stylesheet" href="regstr.css">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -26,11 +28,11 @@
         <!-- Navigation Tabs & Badge -->
         <div class="flex items-center space-x-4">
             <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <button id="nav-register-btn" onclick="switchTab('register')" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm">
+                <button type="button" id="nav-register-btn" onclick="switchTab('register')" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm">
                     <i data-lucide="user-plus" class="w-4 h-4"></i>
                     <span>Register</span>
                 </button>
-                <button id="nav-records-btn" onclick="switchTab('records')" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900">
+                <button type="button" id="nav-records-btn" onclick="switchTab('records')" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900">
                     <i data-lucide="folder-open" class="w-4 h-4"></i>
                     <span>Records (<span id="records-count-badge">0</span>)</span>
                 </button>
@@ -43,7 +45,7 @@
 
         <!-- TAB 1: REGISTRATION FORM -->
         <div id="tab-register" class="space-y-6">
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+            <div class="card-container bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
                 <div class="mb-6 pb-4 border-b border-slate-100">
                     <h2 class="text-lg font-bold text-slate-900">New Student Form</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Fill out student details and configure custom attendance days and time slots.</p>
@@ -53,11 +55,11 @@
                     <!-- Name Fields -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">First Name</label>
+                            <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-1">First Name</label>
                             <input type="text" id="firstName" required placeholder="John" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm outline-none transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Last Name</label>
+                            <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-1">Last Name</label>
                             <input type="text" id="lastName" required placeholder="Doe" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm outline-none transition-all">
                         </div>
                     </div>
@@ -65,23 +67,33 @@
                     <!-- Grade & Phone Fields -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Grade / Class</label>
+                            <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-1">Grade</label>
                             <select id="grade" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm outline-none transition-all">
                                 <option value="">Select Grade</option>
-                                <option value="Elementary">Elementary</option>
-                                <option value="Middle School">Middle School</option>
-                                <option value="High School">High School</option>
+                                <option value="Kindergarten">Kindergarten</option>
+                                <option value="1st Grade">1st Grade</option>
+                                <option value="2nd Grade">2nd Grade</option>
+                                <option value="3rd Grade">3rd Grade</option>
+                                <option value="4th Grade">4th Grade</option>
+                                <option value="5th Grade">5th Grade</option>
+                                <option value="6th Grade">6th Grade</option>
+                                <option value="7th Grade">7th Grade</option>
+                                <option value="8th Grade">8th Grade</option>
+                                <option value="9th Grade">9th Grade</option>
+                                <option value="10th Grade">10th Grade</option>
+                                <option value="11th Grade">11th Grade</option>
+                                <option value="12th Grade">12th Grade</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Parent Phone</label>
+                            <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-1">Parent Phone</label>
                             <input type="tel" id="phone" required placeholder="(555) 000-0000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm outline-none transition-all">
                         </div>
                     </div>
 
                     <!-- Day Selector Checkboxes -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-2">Select Attendance Days</label>
+                        <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-2">Select Attendance Days</label>
                         <div id="day-buttons-container" class="grid grid-cols-4 sm:grid-cols-7 gap-2">
                             <!-- Dynamically populated via JS -->
                         </div>
@@ -89,7 +101,7 @@
 
                     <!-- Dynamic Schedule Time Slots Container -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-2">Configure Time Slots for Selected Days</label>
+                        <label class="input-label block text-xs font-semibold uppercase text-slate-500 mb-2">Configure Time Slots for Selected Days</label>
                         <div id="schedule-slots-container" class="space-y-3">
                             <!-- Dynamically populated via JS -->
                         </div>
@@ -97,10 +109,10 @@
 
                     <!-- Submit Button -->
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
-                        <a href="dashboard.html" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-sm transition-all">
+                        <a href="dashboard.html" class="btn-secondary px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-sm transition-all">
                             Cancel
                         </a>
-                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm shadow-md transition-all">
+                        <button type="submit" class="btn-primary px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm shadow-md transition-all">
                             Save Registration
                         </button>
                     </div>
@@ -110,7 +122,7 @@
 
         <!-- TAB 2: RECORDED SUBMISSIONS -->
         <div id="tab-records" class="space-y-6 hidden">
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="card-container bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900">Registered Students</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Search and review all registered student schedules.</p>
@@ -134,7 +146,7 @@
         <p id="toast-message" class="text-xs font-medium text-slate-700">Notification message here</p>
     </div>
 
-    <!-- Registration Logic Script (Module) -->
+    <!-- Registration Module Script -->
     <script type="module" src="regstr.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
