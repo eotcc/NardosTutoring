@@ -50,7 +50,7 @@ if (loginForm) {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "";
             // Redirect straight to dashboard on successful authentication
-            window.location.href = "dashboard.html";
+            window.location.href = "Dashbrd.html";
         } catch (error) {
             console.error("Firebase sign-in error:", error);
 
