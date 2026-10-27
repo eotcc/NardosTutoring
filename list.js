@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             await fetchStudentSchedules();
         } else {
-            window.location.href = 'admin.html';
+            window.location.href = 'index.html';
         }
     });
 });
