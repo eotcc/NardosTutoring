@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // REDIRECT TO ADMIN DASHBOARD IF USER CLICKS BROWSER BACK BUTTON
 window.addEventListener("pageshow", (event) => {
     if (event.persisted) {
-        window.location.href = 'admin.html';
+        window.location.href = 'index.html';
     }
 });
 
@@ -154,7 +154,7 @@ function handleFormSubmit(event) {
     
     // Automatically redirect back to the Admin Dashboard page after a short delay
     setTimeout(() => {
-        window.location.href = 'admin.html';
+        window.location.href = 'index.html';
     }, 1500);
 }
 
