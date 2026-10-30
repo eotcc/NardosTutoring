@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Inbox - Student Messages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-slate-100 min-h-screen p-4 md:p-8">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-white border border-slate-200 shadow-xl rounded-xl p-4 flex items-center gap-3">
+    <i id="toast-icon" data-lucide="check-circle-2" class="w-5 h-5 text-indigo-600"></i>
+    <span id="toast-message" class="text-sm font-medium text-slate-700"></span>
+  </div>
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    <header class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-800">Teacher Communications Hub</h1>
+        <p class="text-xs text-slate-500">View student messages and respond directly</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          id="teacher-search" 
+          oninput="filterStudentList()" 
+          placeholder="Search student code or name..." 
+          class="px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none w-60"
+        />
+        <button onclick="fetchTeacherData()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 p-2 rounded-xl transition">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Left Sidebar: List of Registered Students -->
+      <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">Registered Students</h2>
+        <div id="teacher-student-list" class="space-y-2 max-h-[600px] overflow-y-auto custom-scrollbar">
+          <p class="text-xs text-slate-400 italic text-center py-6">Loading students from database...</p>
+        </div>
+      </section>
+
+      <!-- Right Panel: Conversation with Selected Student -->
+      <section class="md:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[500px]">
+        <div id="no-student-selected" class="flex flex-col items-center justify-center h-full my-auto py-20 text-center">
+          <i data-lucide="message-square-text" class="w-12 h-12 text-slate-300 mb-2"></i>
+          <p class="text-sm font-semibold text-slate-600">Select a student from the sidebar</p>
+          <p class="text-xs text-slate-400 mt-1">Choose a student to view their private thread and send replies.</p>
+        </div>
+
+        <div id="active-chat-container" class="hidden flex-1 flex flex-col justify-between">
+          <div>
+            <!-- Active Student Header -->
+            <div class="border-b border-slate-200 pb-4 mb-4 flex items-center justify-between">
+              <div>
+                <h3 id="chat-student-name" class="font-bold text-slate-800 text-base">Student Name</h3>
+                <p id="chat-student-meta" class="text-xs text-slate-400">ID: - | Grade: -</p>
+              </div>
+            </div>
+
+            <!-- Thread Messages -->
+            <div id="teacher-messages-thread" class="space-y-3 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
+              <p class="text-xs text-slate-400 italic text-center py-4">No message history with this student.</p>
+            </div>
+          </div>
+
+          <!-- Reply Input -->
+          <form onsubmit="sendTeacherReply(event)" class="mt-4 pt-4 border-t border-slate-200 space-y-2">
+            <textarea 
+              id="replyText" 
+              rows="2" 
+              placeholder="Write a response to the student..." 
+              class="w-full p-3 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition resize-none"
+              required></textarea>
+            <button 
+              type="submit" 
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 ml-auto transition">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              Send Reply
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="teacher.js"></script>
+</body>
+</html>
