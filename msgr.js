@@ -37,7 +37,6 @@ window.fetchTeacherData = async function() {
             allStudents.push({ 
                 firestoreId: docSnap.id, 
                 ...data,
-                // Ensure a normalized upper-case ID exists for reliable querying
                 normalizedId: String(data.id || '').toUpperCase() 
             });
         });
@@ -124,7 +123,6 @@ async function loadStudentThread(student) {
             messages.push(docSnap.data());
         });
 
-        // Fixed sorting bug: properly compare a and b timestamps
         messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
         if (messages.length === 0) {
