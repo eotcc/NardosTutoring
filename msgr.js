@@ -33,7 +33,13 @@ window.fetchTeacherData = async function() {
         const querySnapshot = await getDocs(collection(db, "student_registrations"));
         allStudents = [];
         querySnapshot.forEach((docSnap) => {
-            allStudents.push({ firestoreId: docSnap.id, ...docSnap.data() });
+            const data = docSnap.data();
+            allStudents.push({ 
+                firestoreId: docSnap.id, 
+                ...data,
+                // Ensure a normalized upper-case ID exists for reliable querying
+                normalizedId: String(data.id || '').toUpperCase() 
+            });
         });
 
         renderStudentList(allStudents);
@@ -106,9 +112,10 @@ async function loadStudentThread(student) {
     const threadContainer = document.getElementById('teacher-messages-thread');
 
     try {
+        const studentIdQuery = student.normalizedId || String(student.id || '').toUpperCase();
         const q = query(
             collection(db, "student_communications"),
-            where("id", "==", student.id)
+            where("id", "==", studentIdQuery)
         );
         const querySnapshot = await getDocs(q);
 
@@ -117,7 +124,8 @@ async function loadStudentThread(student) {
             messages.push(docSnap.data());
         });
 
-        messages.sort((a, b) => new Date(a.createdAt) - new Date(a.createdAt));
+        // Fixed sorting bug: properly compare a and b timestamps
+        messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
         if (messages.length === 0) {
             threadContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-6">No messages from this student yet.</p>`;
@@ -150,8 +158,10 @@ window.sendTeacherReply = async function(event) {
 
     if (!content) return;
 
+    const studentIdQuery = activeStudent.normalizedId || String(activeStudent.id || '').toUpperCase();
+
     const payload = {
-        id: activeStudent.id,
+        id: studentIdQuery,
         studentName: activeStudent.fullName || `${activeStudent.firstName || ''} ${activeStudent.lastName || ''}`.trim(),
         grade: activeStudent.grade || 'N/A',
         message: content,
