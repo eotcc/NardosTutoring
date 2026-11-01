@@ -9,13 +9,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB3E6n_VRbeW0MfEvksjvLFTwvDmx0Jk9I",
-    authDomain: "nrdstut.firebaseapp.com",
-    projectId: "nrdstut",
-    storageBucket: "nrdstut.firebasestorage.app",
-    messagingSenderId: "4814258678",
-    appId: "1:4814258678:web:5f8ea96c5c930eb1c847d7",
-    measurementId: "G-NWWNY3VHP6"
+    apiKey: "AIzaSyAgggGVm5GM14pjeLhGUTGLQf7NFmuzon8",
+    authDomain: "agreement-545d5.firebaseapp.com",
+    projectId: "agreement-545d5",
+    storageBucket: "agreement-545d5.firebasestorage.app",
+    messagingSenderId: "13682199073",
+    appId: "1:13682199073:web:4a45f594a814f3a8f73160",
+    measurementId: "G-N0NCRCPRY9"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -81,12 +81,12 @@ function renderStudentList(students) {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// Filter directory strictly by ID code
 window.filterStudentList = function() {
     const queryVal = document.getElementById('teacher-search').value.toLowerCase();
     const filtered = allStudents.filter(s => {
-        const name = (s.fullName || `${s.firstName || ''} ${s.lastName || ''}`).toLowerCase();
         const id = (s.id || '').toLowerCase();
-        return name.includes(queryVal) || id.includes(queryVal);
+        return id.includes(queryVal);
     });
     renderStudentList(filtered);
 };
